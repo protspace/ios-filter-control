@@ -25,10 +25,10 @@
 {
     // Cached slot width
     CGFloat oneSlotSize;
-
+    
     // Hold titles count, to allows a control without labels
     NSUInteger titlesCount;
-
+    
     // Dragging management
     BOOL dragging;
     CGFloat dragOffset;
@@ -58,11 +58,11 @@
     {
         // Force frame height
         self.frame = CGRectMake(CGRectGetMinX(self.frame), CGRectGetMinY(self.frame), CGRectGetWidth(self.frame), SEFilterControl_HEIGHT);
-
+        
         // Perform common inits
         [self commonInits:@[@"", @"", @""]];
     }
-
+    
     return self;
 }
 
@@ -70,7 +70,7 @@
 {
     // Force frame height
     CGRect updatedFrame = CGRectMake(CGRectGetMinX(frame), CGRectGetMinY(frame), CGRectGetWidth(frame), SEFilterControl_HEIGHT);
-
+    
     if (self = [super initWithFrame:updatedFrame])
     {
 #if TARGET_INTERFACE_BUILDER
@@ -81,30 +81,30 @@
         [self commonInits:@[@"", @"", @""]];
 #endif
     }
-
+    
     return self;
 }
 
 - (id)initWithFrame:(CGRect) frame titles:(NSArray *) titles{
     if (self = [super initWithFrame:CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, SEFilterControl_HEIGHT)]) {
-
+        
         // Perform common inits
         [self commonInits:titles];
     }
-
+    
     return self;
 }
 
 - (id)initWithFrame:(CGRect) frame titles:(NSArray *) titles labels:(NSArray *) labels{
     if (self = [super initWithFrame:CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, SEFilterControl_HEIGHT)]) {
-
+        
         NSAssert2(titles.count == labels.count, @"Error, titles (%ld) and labels (%ld) must contains same objects count", titles.count, labels.count);
-
+        
         // Perfom common inits
         [self applyDefaultConfiguration];
         [self commonInits:titles labels:labels];
     }
-
+    
     return self;
 }
 
@@ -112,18 +112,18 @@
 {
     self.backgroundColor    = [UIColor clearColor];
     _progressColor          = SEFilterControl_DEFAULT_PROGRESS_COLOR;
-
+    
     _titlesFont             = SEFilterControl_DEFAULT_TITLE_FONT;
     _titlesColor            = SEFilterControl_DEFAULT_TITLE_COLOR;
     _titlesShadowColor      = SEFilterControl_DEFAULT_TITLE_SHADOW_COLOR;
-
+    
     _continuous             = NO;
 }
 
 - (void)commonInits:(NSArray *)titles
 {
     [self applyDefaultConfiguration];
-
+    
     // Create labels
     NSMutableArray *labels = [[NSMutableArray alloc] init];
     
@@ -138,13 +138,13 @@
 {
     // Hold labels
     self.labels = labels;
-
+    
     // Hold titles counts
     titlesCount = titles.count;
-
+    
     // Precompute slot size for futur use
     [self refreshSlotSize];
-
+    
     [self configureGestures];
     [self configureLabels:titles];
     [self configureKnob];
@@ -155,11 +155,11 @@
 {
     NSString *title;
     UILabel *lbl;
-
+    
     for (NSInteger i = 0; i < titlesCount; i++) {
         title = [titles objectAtIndex:i];
         lbl   = [_labels objectAtIndex:i];
-
+        
         [lbl setFrame:CGRectMake(0, 0, oneSlotSize, 25)];
         [lbl setLineBreakMode:NSLineBreakByTruncatingMiddle];
         [lbl setAdjustsFontSizeToFitWidth:YES];
@@ -168,10 +168,10 @@
         [lbl setShadowOffset:CGSizeMake(0, 0.5)];
         [lbl setBackgroundColor:[UIColor clearColor]];
         [lbl setText:title];
-
+        
         if (i)
             [lbl setAlpha:TITLE_FADE_ALPHA];
-
+        
         [lbl setCenter:[self centerPointForIndex:i]];
         
         [self addSubview:lbl];
@@ -181,13 +181,13 @@
 - (void)configureKnob
 {
     SEFilterKnob *handler = [SEFilterKnob buttonWithType:UIButtonTypeCustom];
-
+    
     [handler setFrame:CGRectMake(LEFT_OFFSET, CGRectGetHeight(self.frame) - KNOB_HEIGHT, KNOB_WIDTH, KNOB_HEIGHT)];
     [handler setCenter:CGPointMake(handler.center.x-(CGRectGetWidth(handler.frame)/2.f), CGRectGetHeight(self.frame)-19.5f)];
     [handler setAdjustsImageWhenHighlighted:NO];
-
+    
     [self addSubview:handler];
-
+    
     // Hold handler
     self.handler = handler;
 }
@@ -196,7 +196,7 @@
 {
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureDetected:)];
     [self addGestureRecognizer:tapGesture];
-
+    
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureDetected:)];
     [self addGestureRecognizer:panGesture];
 }
@@ -222,7 +222,7 @@
             [labels removeLastObject];
         }
     }
-
+    
     // Update titles
     [self setTitles:titles labels:labels];
 }
@@ -231,19 +231,19 @@
 {
     // Hold labels
     self.labels = labels;
-
+    
     // Hold titles counts
     titlesCount = titles.count;
     
     // Precompute slot size for futur use
     [self refreshSlotSize];
-
+    
     // Refresh titles
     [self configureLabels:titles];
-
+    
     // Force refresh
     [self setNeedsDisplay];
-
+    
     // Reset selection
     self.selectedIndex = 0;
 }
@@ -252,7 +252,7 @@
 - (void)drawRect:(CGRect)rect {
 #if TARGET_INTERFACE_BUILDER
 #endif
-
+    
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGColorRef shadowColor = [UIColor colorWithRed:0 green:0
@@ -287,11 +287,11 @@
     
     CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:1
                                                                blue:1 alpha:1.f].CGColor);
-    CGContextSetLineWidth(context, .4f);
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, LEFT_OFFSET, rect.size.height-25);
-    CGContextAddLineToPoint(context, rect.size.width-RIGHT_OFFSET, rect.size.height-25);
-    CGContextStrokePath(context);
+    //    CGContextSetLineWidth(context, .4f);
+    //    CGContextBeginPath(context);
+    //    CGContextMoveToPoint(context, LEFT_OFFSET, rect.size.height-0);
+    //    CGContextAddLineToPoint(context, rect.size.width-RIGHT_OFFSET, rect.size.height-0);
+    //    CGContextStrokePath(context);
     
     CGContextRestoreGState(context);
     
@@ -304,19 +304,19 @@
         
         CGContextSetFillColorWithColor(context, self.progressColor.CGColor);
         
-        CGContextFillEllipseInRect(context, CGRectMake(centerPoint.x-15, rect.size.height-42.5f, 25, 25));
+        //CGContextFillEllipseInRect(context, CGRectMake(centerPoint.x-15, rect.size.height-42.5f, 25, 25));
         
         //Draw top Gradient
         
         CGFloat colors[12] = {0, 0, 0, 1,
-                              0, 0, 0, 0,
-                              0, 0, 0, 0};
-
+            0, 0, 0, 0,
+            0, 0, 0, 0};
+        
         CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
         CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, 3);
         
         CGContextSaveGState(context);
-        CGContextAddEllipseInRect(context, CGRectMake(centerPoint.x-15, rect.size.height-42.5f, 25, 25));
+        // CGContextAddEllipseInRect(context, CGRectMake(centerPoint.x-15, rect.size.height-42.5f, 25, 25));
         CGContextClip(context);
         CGContextDrawLinearGradient (context, gradient, CGPointMake(0, 0), CGPointMake(0,rect.size.height), 0);
         
@@ -329,8 +329,8 @@
         
         CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:1
                                                                    blue:1 alpha:.4f].CGColor);
-        CGContextSetLineWidth(context, .8f);
-        CGContextAddArc(context,centerPoint.x-2.5,rect.size.height-30.5f,12.5f,24*M_PI/180,156*M_PI/180,0);
+        //CGContextSetLineWidth(context, .8f);
+        //CGContextAddArc(context,centerPoint.x-2.5,rect.size.height-30.5f,12.5f,24*M_PI/180,156*M_PI/180,0);
         CGContextDrawPath(context,kCGPathStroke);
         
         //Draw Black Top Shadow
@@ -353,7 +353,7 @@
             [UIView beginAnimations:nil context:nil];
             [UIView setAnimationBeginsFromCurrentState:YES];
         }
-
+        
         if (idx == index) {
             [label setCenter:CGPointMake(CGRectGetMidX(label.frame), self.frame.size.height-KNOB_HEIGHT-TITLE_SELECTED_DISTANCE)];
             [label setAlpha:1];
@@ -374,7 +374,7 @@
     
     if (animated)
         [UIView beginAnimations:nil context:nil];
-
+    
     // Move handler
     [_handler setFrame:CGRectMake(toPoint.x, toPoint.y, _handler.frame.size.width, _handler.frame.size.height)];
     
@@ -385,7 +385,7 @@
 #pragma mark - UIGestureRecognizer callbacks
 - (void)tapGestureDetected:(UITapGestureRecognizer *)tapGesture {
     [self sendActionsForControlEvents:UIControlEventTouchUpInside];
-
+    
     [self setSelectedIndex:[self selectedTitleInPoint:[tapGesture locationInView:self]]
                   animated:YES];
 }
@@ -400,10 +400,10 @@
             dragging = YES;
             [self moveKnobToPoint:CGPointMake(point.x - dragOffset, point.y)];
         }
-
+        
         return;
     }
-
+    
     // If no dragging, nothing to do
     if (!dragging)
         return;
@@ -439,10 +439,10 @@
     toPoint = [self fixFinalPoint:toPoint];
     
     [_handler setFrame:CGRectMake(toPoint.x, toPoint.y, _handler.frame.size.width, _handler.frame.size.height)];
-
+    
     [self updateTitlesToIndex:[self selectedTitleInPoint:_handler.center]
                      animated:YES];
-
+    
     [self sendActionsForControlEvents:UIControlEventTouchDragInside];
 }
 
@@ -450,11 +450,11 @@
 - (UILabel *)buildDefaultLabel
 {
     UILabel *label = [[UILabel alloc] init];
-
+    
     [label setFont:_titlesFont];
     [label setShadowColor:_titlesShadowColor];
     [label setTextColor:_titlesColor];
-
+    
     return label;
 }
 
@@ -496,21 +496,21 @@
 
 - (void) setTitlesColor:(UIColor *)color{
     _titlesColor = color;
-
+    
     for (UILabel *label in _labels)
         [label setTextColor:color];
 }
 
 - (void) titlesShadowColor:(UIColor *)shadowColor{
     _titlesShadowColor = shadowColor;
-
+    
     for (UILabel *label in _labels)
         [label setShadowColor:shadowColor];
 }
 
 - (void) setTitlesFont:(UIFont *)font{
     _titlesFont = font;
-
+    
     for (UILabel *label in _labels)
         [label setFont:font];
 }

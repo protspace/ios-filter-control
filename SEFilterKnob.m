@@ -42,7 +42,7 @@ static NSArray *observedValues = nil;
                       context:nil];
         }
     }
-
+    
     return self;
 }
 
@@ -60,7 +60,7 @@ static NSArray *observedValues = nil;
         CGColorRef shadowColor = _shadowColor.CGColor;
         CGContextSetShadowWithColor(context, CGSizeMake(0, 7), 10.f, shadowColor);
     }
-
+    
     CGContextSetStrokeColorWithColor(context, _handlerColor.CGColor);
     CGContextSetLineWidth(context, 11);
     CGContextStrokeEllipseInRect(context, CGRectMake(6.5f, 6, 22, 22));
@@ -89,8 +89,8 @@ static NSArray *observedValues = nil;
     
     
     CGFloat colors[8] = { 0, 0, 0,  0,
-                          0, 0, 0, .6};
-
+        0, 0, 0, .6};
+    
     CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
     CGGradientRef gradient    = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, 2);
     
@@ -102,7 +102,7 @@ static NSArray *observedValues = nil;
     // Memory
     CGGradientRelease(gradient);
     CGColorSpaceRelease(baseSpace);
-
+    
     // Restore previous state
     CGContextRestoreGState(context);
 }
